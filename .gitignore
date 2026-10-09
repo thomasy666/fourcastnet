@@ -222,3 +222,14 @@ __marimo__/
 # AI Files
 CLAUDE.md 
 agent.md
+# ---- FourCastNet project: never commit weights, data, or caches ----
+*.nc
+*.zarr/
+*.zarr
+*.pt
+*.pth
+*.ckpt
+*.tar
+*.mdlus
+data/
+cache/
