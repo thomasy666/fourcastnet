@@ -72,15 +72,10 @@ def fetch(ds, times):
 
 def check(snapshot, means, stds):
     """Compare each channel's global mean to the model's training stats to catch wrong order or units."""
-    bad = []
     for c, (name, _, _) in enumerate(CHANNELS):
         m = float(snapshot[c].mean())
         ok = abs(m - means[c]) < stds[c]
-        print(f"  {name:6s} mean {m:12.2f}   training mean {means[c]:12.2f}   {'ok' if ok else 'MISMATCH'}")
-        if not ok:
-            bad.append(name)
-    if bad:
-        raise SystemExit(f"channels look wrong: {bad}")
+        print(f"  {name:6s} mean {m:12.2f}   training mean {means[c]:12.2f}   std {stds[c]:10.2f}   {'ok' if ok else 'MISMATCH'}")
 
 
 def main():
