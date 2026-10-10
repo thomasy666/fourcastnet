@@ -32,6 +32,11 @@ def main():
     args = parser.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
+    # NVlabs saves predicted/ground_truth normalized; convert back with the model's stats
+    stats = os.path.join(os.environ["WEIGHTS_DIR"], "stats_v0")
+    means = np.load(os.path.join(stats, "global_means.npy")).reshape(-1)
+    stds = np.load(os.path.join(stats, "global_stds.npy")).reshape(-1)
+
     files = sorted(glob.glob(os.path.join(args.run_dir, "*", "autoregressive_predictions_z500_vis.h5")))
     w = lat_weights()
     checks, model, pers, acc = [], {v: [] for v in CHANNELS}, {v: [] for v in CHANNELS}, {v: [] for v in CHANNELS}
@@ -43,7 +48,8 @@ def main():
             n_lead = pred.shape[1]
             checks.append((pred.shape[2:] == (20, 720, 1440), f"{init}: output shape {pred.shape}"))
             for var, c in CHANNELS.items():
-                p, t = pred[0, :, c], truth[0, :, c]
+                p = pred[0, :, c] * stds[c] + means[c]
+                t = truth[0, :, c] * stds[c] + means[c]
                 lo, hi = RANGES[var]
                 ok = bool(np.isfinite(p).all() and lo <= p.min() and p.max() <= hi)
                 checks.append((ok, f"{init}: {var} finite, range {p.min():.1f} to {p.max():.1f} (expected {lo:g} to {hi:g})"))
@@ -52,7 +58,8 @@ def main():
                 pers[var].append([rmse(t[0], t[k], w) for k in range(n_lead)])  # persistence: start state held fixed
             if path == files[0]:
                 k = min(12, n_lead - 1)  # 72 h, or the last lead for short runs
-                map_data = (init, 6 * k, pred[0, k, 14], truth[0, k, 14])
+                c = CHANNELS["z500"]
+                map_data = (init, 6 * k, pred[0, k, c] * stds[c] + means[c], truth[0, k, c] * stds[c] + means[c])
 
     hours = 6 * np.arange(n_lead)
     model = {v: np.mean(x, axis=0) for v, x in model.items()}
