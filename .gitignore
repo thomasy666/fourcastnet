@@ -234,3 +234,7 @@ agent.md
 data/
 cache/
 TROUBLESHOOTING.md
+
+# Run evidence is committed
+!logs/*.log
+!logs/env/
