@@ -1,0 +1,8 @@
+date: 2026-10-09T21:35:48-04:00
+host: login-ice-gnr-2.pace.gatech.edu
+repo commit: be5243078e54237ff6f2234ef07c0597f4d66613
+FourCastNet commit: 93360c1720a9f97aabf970689f21c9fad8737788
+module: miniforge/24.3.0-0
+python: 3.11.17
+torch: 2.4.1+cu121 cuda 12.1
+numpy: 1.26.4
