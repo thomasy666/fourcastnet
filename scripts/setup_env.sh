@@ -1,4 +1,3 @@
-#!/bin/bash
 # Build the conda env and check out the NVlabs code. Run on the login node from the repo root.
 set -eo pipefail
 
